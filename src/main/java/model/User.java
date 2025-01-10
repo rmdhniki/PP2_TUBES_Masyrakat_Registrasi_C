@@ -9,16 +9,17 @@ public class User {
     private String email;
     private String password;
     private String address;
-    private LocalDate birthDate;  // Menggunakan LocalDate untuk birthDate
-    private LocalDateTime createdAt;  // Menggunakan LocalDateTime untuk createdAt
+    private LocalDate birthDate;
+    private LocalDateTime createdAt;
     private Integer roleId;
     private String otp;
     private LocalDateTime otpExpiry;
     private Boolean isUsed;
-    private Boolean verified;
+    private Boolean isVerified;
     private String photoPath;
 
-    // Getter dan Setter untuk semua field
+    // Getters and Setters
+
     public Integer getId() {
         return id;
     }
@@ -108,11 +109,11 @@ public class User {
     }
 
     public Boolean getVerified() {
-        return verified;
+        return isVerified;
     }
 
     public void setVerified(Boolean verified) {
-        this.verified = verified;
+        isVerified = verified;
     }
 
     public String getPhotoPath() {
