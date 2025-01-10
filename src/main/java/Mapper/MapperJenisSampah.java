@@ -15,7 +15,7 @@ public interface MapperJenisSampah {
             @Result(property = "name", column = "name"),
             @Result(property = "description", column = "description"),
             @Result(property = "category", column = "category_id",
-                    one = @One(select = "mapper.MapperKategori.getCategoryById"))
+                    one = @One(select = "Mapper.MapperKategori.getCategoryById"))
     })
     List<JenisSampah> getAll();
 
@@ -28,14 +28,14 @@ public interface MapperJenisSampah {
             @Result(property = "name", column = "name"),
             @Result(property = "description", column = "description"),
             @Result(property = "category", column = "category_id",
-                    one = @One(select = "mapper.MapperKategori.getCategoryById"))
+                    one = @One(select = "Mapper.MapperKategori.getCategoryById"))
     })
     JenisSampah getById(@Param("id") int id);
 
     @Select("SELECT * FROM jenis_sampah WHERE name = #{name}")
     @Results({
             @Result(property = "category", column = "category_id",
-                    one = @One(select = "mapper.MapperKategori.getCategoryById")),
+                    one = @One(select = "Mapper.MapperKategori.getCategoryById")),
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
             @Result(property = "description", column = "description"),
