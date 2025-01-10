@@ -5,18 +5,17 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.border.EmptyBorder;
 
-public class ResetPasswordView extends JFrame {
+public class HalamanForgotPassword extends JPanel {
+    private final MainFrame mainFrame;
     private JTextField txtEmail;
     private JButton btnBack;
     private JButton btnResetPassword;
     private JLabel lblTitle;
 
-    public ResetPasswordView() {
-        setTitle("Reset Password");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(420, 700);
-        setLocationRelativeTo(null);
-        setResizable(false);
+    public HalamanForgotPassword(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+
+        setLayout(new BorderLayout());
 
         // Main Panel
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -64,6 +63,7 @@ public class ResetPasswordView extends JFrame {
 
         // Add main panel to frame
         add(mainPanel);
+        setupListeners();
     }
     // Helper method to create styled JTextField
     private JTextField createTextField(String placeholder) {
@@ -100,15 +100,12 @@ public class ResetPasswordView extends JFrame {
         return button;
     }
 
-    public void addResetPasswordListener(ActionListener actionListener) {
-        btnResetPassword.addActionListener(actionListener);
-    }
-
-    public void addBackListener(ActionListener actionListener) {
-        btnBack.addActionListener(actionListener);
-    }
 
     public JTextField getTxtEmail() {
         return txtEmail;
     }
+    private void setupListeners(){
+        btnBack.addActionListener(e -> mainFrame.showLogin());
+    }
+
 }
