@@ -66,10 +66,9 @@ public class HalamanProfile extends JPanel {
         profilePictureLabel.setPreferredSize(new Dimension(150, 150));
 
         saveButton = createButton("Save", new Color(0x187824), Color.WHITE);
-        changePasswordButton = createButton("Reset Password",new Color(0x187824), Color.WHITE);
+        changePasswordButton = createButton("Change Password",new Color(0x187824), Color.WHITE);
         backButton = createButton("Back", new Color(0x80251A), Color.WHITE);
         uploadPhotoButton = createButton("Upload Photo",new Color(0x187824), Color.WHITE);
-
 
         Dimension fieldSize = new Dimension(300, 40);
         nameField.setPreferredSize(fieldSize);
@@ -233,8 +232,9 @@ public class HalamanProfile extends JPanel {
             }
         });
 
-        changePasswordButton.addActionListener(e -> {
-            mainFrame.showForgotPassword();
+        changePasswordButton.addActionListener(e ->{
+            FormChangePassword dialog = new FormChangePassword((JFrame) SwingUtilities.getWindowAncestor(this), user.getEmail(), mainFrame);
+            dialog.setVisible(true);
         });
 
         backButton.addActionListener(e -> {

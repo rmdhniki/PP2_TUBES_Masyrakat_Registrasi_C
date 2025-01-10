@@ -30,6 +30,8 @@ public interface MapperUser {
             "VALUES(#{name}, #{email}, #{password}, #{address}, #{birthDate}, #{createdAt}, COALESCE(#{roleId}, 2),#{photoPath}, #{isVerified})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(User user);
+    @Update("UPDATE users SET password = #{password} WHERE email = #{email}")
+    void updatePassword(@Param("email") String email,@Param("password") String password );
 
     @Update("UPDATE users SET name = #{name}, address = #{address}, birth_date = #{birthDate}, photo_path = #{photoPath} WHERE id = #{id}")
     int updateUser(User user);
