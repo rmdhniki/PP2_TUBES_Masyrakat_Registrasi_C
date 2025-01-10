@@ -65,10 +65,10 @@ public class HalamanProfile extends JPanel {
         profilePictureLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
         profilePictureLabel.setPreferredSize(new Dimension(150, 150));
 
-        saveButton = createButton("Simpan", new Color(0x187824), Color.WHITE);
-        changePasswordButton = createButton("Ubah Password",new Color(0x187824), Color.WHITE);
-        backButton = createButton("Kembali", new Color(0x80251A), Color.WHITE);
-        uploadPhotoButton = createButton("Unggah Foto",new Color(0x187824), Color.WHITE);
+        saveButton = createButton("Save", new Color(0x187824), Color.WHITE);
+        changePasswordButton = createButton("Reset Password",new Color(0x187824), Color.WHITE);
+        backButton = createButton("Back", new Color(0x80251A), Color.WHITE);
+        uploadPhotoButton = createButton("Upload Photo",new Color(0x187824), Color.WHITE);
 
 
         Dimension fieldSize = new Dimension(300, 40);
@@ -112,7 +112,7 @@ public class HalamanProfile extends JPanel {
 
     private void setDefaultImage() {
         try {
-            ImageIcon defaultIcon = new ImageIcon(getClass().getResource("/avatar.png"));
+            ImageIcon defaultIcon = new ImageIcon(getClass().getResource("/user.png"));
             Image scaledImage = defaultIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
             profilePictureLabel.setIcon(new ImageIcon(scaledImage));
         } catch (Exception e) {
@@ -234,7 +234,7 @@ public class HalamanProfile extends JPanel {
         });
 
         changePasswordButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Fitur ubah password belum tersedia.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            mainFrame.showForgotPassword();
         });
 
         backButton.addActionListener(e -> {

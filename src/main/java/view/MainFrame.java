@@ -1,8 +1,8 @@
 package view;
 
+import controller.ControllerUser;
 import javax.swing.*;
 import java.awt.*;
-import controller.ControllerUser;
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
@@ -12,12 +12,11 @@ public class MainFrame extends JFrame {
     private HalamanRegister registerPanel;
     private HalamanOtp otpPanel;
     private HalamanProfile profilePanel;
-    private DashboardAdmin dashboardPanel; // Dashboard Panel
+    private DashboardAdmin dashboardPanel;
     private HalamanBeranda halamanBerandaPanel;
-    private HalamanForgotPassword forgotPasswordPanel; // Halaman forgot password
+    private HalamanForgotPassword forgotPasswordPanel;
     private String emailForVerification;
-    private Integer currentUserId; // Untuk menyimpan user ID yang login
-
+    private Integer currentUserId;
 
     public MainFrame() {
         initComponents();
@@ -28,43 +27,34 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Initialize panels
         halamanBerandaPanel = new HalamanBeranda(this);
         loginPanel = new HalamanLogin(this);
         registerPanel = new HalamanRegister(this);
         otpPanel = new HalamanOtp(this);
         halamanUtamaPanel = new HalamanUtamaPanel(this);
-        // Initialize Dashboard with ControllerUser (without UserDao)
         ControllerUser userController = new ControllerUser();
         dashboardPanel = new DashboardAdmin(this);
         profilePanel = new HalamanProfile(this, currentUserId);
-        forgotPasswordPanel = new HalamanForgotPassword(this); // Inisialisasi forgot password
+        forgotPasswordPanel = new HalamanForgotPassword(this);
 
-        // Add panels to card layout
         mainPanel.add(halamanBerandaPanel,"BERANDA");
         mainPanel.add(loginPanel, "LOGIN");
         mainPanel.add(registerPanel, "REGISTER");
         mainPanel.add(otpPanel, "OTP");
         mainPanel.add(halamanUtamaPanel, "HALAMAN_UTAMA");
         mainPanel.add(profilePanel, "PROFILE");
-        mainPanel.add(forgotPasswordPanel,"FORGOT_PASSWORD"); // Tambahkan ForgotPassword ke card layout
-        mainPanel.add(dashboardPanel, "DASHBOARD"); // Tambahkan dashboard ke main panel
+        mainPanel.add(forgotPasswordPanel,"FORGOT_PASSWORD");
+        mainPanel.add(dashboardPanel, "DASHBOARD");
 
-
-
-        // Add main panel to frame
         add(mainPanel);
-
-        // Show beranda by default
         showBeranda();
     }
-    // Tambahkan metode untuk menampilkan ProfilePanel
+
     public void showProfile() {
-        // Pastikan userId diambil dari user yang login
         if (currentUserId != null) {
-            profilePanel = new HalamanProfile(this, currentUserId); // Berikan userId saat inisialisasi
-            mainPanel.add(profilePanel, "PROFILE"); // Tambahkan panel ke mainPanel
-            cardLayout.show(mainPanel, "PROFILE"); // Tampilkan ProfilePanel
+            profilePanel = new HalamanProfile(this, currentUserId);
+            mainPanel.add(profilePanel, "PROFILE");
+            cardLayout.show(mainPanel, "PROFILE");
         } else {
             JOptionPane.showMessageDialog(this, "User ID tidak ditemukan!", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -91,7 +81,7 @@ public class MainFrame extends JFrame {
     }
 
     public void showOTP() {
-        cardLayout.show(mainPanel, "OTP"); // Menampilkan OTPPanel
+        cardLayout.show(mainPanel, "OTP");
     }
 
     public void showDashboard() {

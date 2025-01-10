@@ -27,7 +27,7 @@ public interface MapperUser {
     User getByEmail(String email);
 
     @Insert("INSERT INTO users(name, email, password, address, birth_date, created_at, role_id, photo_path, is_verified) " +
-            "VALUES(#{name}, #{email}, #{password}, #{address}, #{birthDate}, #{createdAt}, COALESCE(#{roleId}, 2),#{photoPath}, #{verified})")
+            "VALUES(#{name}, #{email}, #{password}, #{address}, #{birthDate}, #{createdAt}, COALESCE(#{roleId}, 2),#{photoPath}, #{isVerified})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insert(User user);
 
@@ -40,7 +40,7 @@ public interface MapperUser {
 
     // Update the verification status of the user
     @Update("UPDATE users SET is_verified = #{status} WHERE email = #{email}")
-    void updateVerificationStatus(@Param("email") String email, @Param("status") String status);
+    void updateVerificationStatus(@Param("email") String email, @Param("status") Integer status);
 
     @Select("SELECT * FROM users WHERE id = #{id}")
     @Results({

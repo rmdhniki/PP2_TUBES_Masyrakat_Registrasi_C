@@ -49,6 +49,7 @@ public class ControllerUser {
             String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
             user.setPassword(hashedPassword);
             user.setCreatedAt(LocalDateTime.now());
+            user.setVerified(false); // Set default to no
 
             userMapper.insert(user);
 
@@ -98,7 +99,10 @@ public class ControllerUser {
                 otpMapper.updateStatus(otp.getId(), "USED");
 
                 // Update user verification status
-                userMapper.updateVerificationStatus(email, "YES");
+                userMapper.updateVerificationStatus(email, 1);
+
+                User user = userMapper.getByEmail(email);
+                user.setVerified(true);
 
                 // Commit all changes
                 session.commit();
