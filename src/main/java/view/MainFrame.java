@@ -40,12 +40,11 @@ public class MainFrame extends JFrame {
         mainPanel.add(halamanBerandaPanel,"BERANDA");
         mainPanel.add(loginPanel, "LOGIN");
         mainPanel.add(registerPanel, "REGISTER");
-        mainPanel.add(otpPanel, "OTP");
+        mainPanel.add(otpPanel,"OTP");
         mainPanel.add(halamanUtamaPanel, "HALAMAN_UTAMA");
         mainPanel.add(profilePanel, "PROFILE");
         mainPanel.add(forgotPasswordPanel,"FORGOT_PASSWORD");
         mainPanel.add(dashboardPanel, "DASHBOARD");
-
         add(mainPanel);
         showBeranda();
     }
@@ -58,6 +57,15 @@ public class MainFrame extends JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "User ID tidak ditemukan!", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    public void showResetPasswordOtp(String email) {
+        otpPanel = new HalamanOtp(this, email,"reset_password");
+        mainPanel.add(otpPanel, "OTP_RESET_PASSWORD");
+        cardLayout.show(mainPanel, "OTP_RESET_PASSWORD");
+    }
+    public void showResetPasswordForm(String email){
+        FormResetPassword resetPassword = new FormResetPassword(this, email, this);
+        resetPassword.setVisible(true);
     }
 
     public void showBeranda() {
@@ -81,8 +89,11 @@ public class MainFrame extends JFrame {
     }
 
     public void showOTP() {
+        otpPanel = new HalamanOtp(this);
+        mainPanel.add(otpPanel,"OTP");
         cardLayout.show(mainPanel, "OTP");
     }
+
 
     public void showDashboard() {
         cardLayout.show(mainPanel, "DASHBOARD");

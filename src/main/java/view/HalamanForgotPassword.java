@@ -1,5 +1,7 @@
 package view;
 
+import controller.ControllerUser;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -11,9 +13,12 @@ public class HalamanForgotPassword extends JPanel {
     private JButton btnBack;
     private JButton btnResetPassword;
     private JLabel lblTitle;
+    private ControllerUser userController;
+
 
     public HalamanForgotPassword(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        this.userController = new ControllerUser();
 
         setLayout(new BorderLayout());
 
@@ -43,7 +48,7 @@ public class HalamanForgotPassword extends JPanel {
         // Email input
         txtEmail = createTextField("Email Address");
         btnResetPassword = createButton("Reset Password", new Color(24, 120, 36), Color.WHITE);
-        btnBack = createButton("BACK", new Color(128, 37, 26), Color.WHITE);
+        btnBack = createButton("Back to Login", new Color(128, 37, 26), Color.WHITE);
 
         // Adding components to grid
         gbc.gridx = 0; gbc.gridy = 0;
@@ -106,6 +111,20 @@ public class HalamanForgotPassword extends JPanel {
     }
     private void setupListeners(){
         btnBack.addActionListener(e -> mainFrame.showLogin());
+
+        btnResetPassword.addActionListener(e -> {
+            String email = txtEmail.getText().trim();
+            if (email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter your email.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            try{
+                userController.requestPasswordReset(email);
+                mainFrame.showResetPasswordOtp(email);
+            }catch(Exception ex){
+                JOptionPane.showMessageDialog(this, "Failed to Request Reset Password: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
     }
 
 }

@@ -1,7 +1,6 @@
 package view;
 
 import controller.ControllerUser;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,9 +9,20 @@ public class HalamanOtp extends JPanel {
     private JTextField otpField;
     private JButton submitButton;
     private JButton backButton;
+    private String type;
+    private String email;
+    public HalamanOtp(MainFrame mainFrame, String email, String type) {
+        this.mainFrame = mainFrame;
+        this.type = type;
+        this.email = email;
+        initComponents();
+        setupLayout();
+        setupListeners();
+    }
 
     public HalamanOtp(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+        // this.type = "register"; // Set a default type for register
         initComponents();
         setupLayout();
         setupListeners();
@@ -21,12 +31,10 @@ public class HalamanOtp extends JPanel {
     private void initComponents() {
         otpField = new JTextField(20);
         submitButton = createButton("Submit", new Color(0x187824), Color.WHITE);
-        backButton = createButton("Back to Register",  new Color(0x80251A), Color.WHITE);
-
+        backButton = createButton("Back",  new Color(0x80251A), Color.WHITE);
 
         Dimension fieldSize = new Dimension(300, 40);
         otpField.setPreferredSize(fieldSize);
-
     }
     // Helper method untuk create button
     private JButton createButton(String text, Color bgColor, Color fgColor) {
@@ -56,14 +64,12 @@ public class HalamanOtp extends JPanel {
         formGbc.fill = GridBagConstraints.HORIZONTAL;
         formGbc.insets = new Insets(5, 10, 5, 10);
 
-
         formPanel.add(new JLabel("Enter OTP:", SwingConstants.LEFT), formGbc);
         formPanel.add(otpField, formGbc);
         formPanel.add(Box.createVerticalStrut(20), formGbc);
         formPanel.add(submitButton, formGbc);
         formPanel.add(Box.createVerticalStrut(10), formGbc);
         formPanel.add(backButton, formGbc);
-
 
         add(formPanel, gbc);
     }
@@ -82,8 +88,6 @@ public class HalamanOtp extends JPanel {
 
             try {
                 ControllerUser userController = new ControllerUser();
-                String email = mainFrame.getEmailForVerification();
-
                 if (email == null || email.isEmpty()) {
                     JOptionPane.showMessageDialog(this,
                             "Error: Email for verification is missing.",
@@ -92,14 +96,19 @@ public class HalamanOtp extends JPanel {
                     return;
                 }
 
-                boolean verified = userController.verifyOtp(email, otp);
+                boolean verified = userController.verifyOtp(email, otp, type);
 
                 if (verified) {
                     JOptionPane.showMessageDialog(this,
                             "OTP Verified Successfully!",
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
-                    mainFrame.showLogin();
+                    if(type != null && type.equals("register"))
+                        mainFrame.showLogin();
+                    else{
+                        mainFrame.showResetPasswordForm(email);
+                    }
+
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "Invalid or Expired OTP",
@@ -113,7 +122,13 @@ public class HalamanOtp extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
         });
+        if(type != null && type.equals("register")){
+            backButton.addActionListener(e -> mainFrame.showRegister());
+        }
+        else{
+            backButton.addActionListener(e -> mainFrame.showForgotPassword());
+        }
 
-        backButton.addActionListener(e -> mainFrame.showRegister());
+
     }
 }
