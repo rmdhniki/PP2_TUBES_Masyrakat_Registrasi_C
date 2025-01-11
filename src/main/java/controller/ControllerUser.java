@@ -115,8 +115,43 @@ public class ControllerUser {
                     userMapper.updateVerificationStatus(email, 1);
                     User user = userMapper.getByEmail(email);
                     user.setVerified(true);
-
                 }
+
+                // Commit all changes
+                session.commit();
+
+                System.out.println("OTP verified successfully for email: " + email);
+                return true;
+            }
+
+            System.out.println("Invalid OTP for email: " + email);
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to verify OTP. Please try again.");
+        }
+    }
+    public boolean verifyPasswordResetOtp(String email, String otpCode) {
+        try (SqlSession session = factory.openSession()) {
+            MapperOtp otpMapper = session.getMapper(MapperOtp.class);
+            // Fetch active OTP
+            Otp otp = otpMapper.findActiveOtpByEmail(email);
+
+            if (otp == null) {
+                System.out.println("No active OTP found for email: " + email);
+                return false;
+            }
+
+            // Check expiration
+            if (otp.getExpiresAt().isBefore(LocalDateTime.now())) {
+                System.out.println("OTP has expired for email: " + email);
+                return false;
+            }
+
+            // Verify OTP code
+            if (otp.getOtpCode().equals(otpCode)) {
+                // Update OTP status
+                otpMapper.updateStatus(otp.getId(), "USED");
                 // Commit all changes
                 session.commit();
 
