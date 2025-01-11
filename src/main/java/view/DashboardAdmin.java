@@ -64,30 +64,30 @@ public class DashboardAdmin extends JPanel {
         tabbedPane = new JTabbedPane();
 
         // Users Tab
-        userTableModel = new DefaultTableModel(new String[]{"ID", "Nama", "Email", "Alamat", "Tanggal Lahir", "Foto"}, 0);
+        userTableModel = new DefaultTableModel(new String[]{"ID", "Nama", "Email", "Alamat", "Tanggal Lahir", "Role"}, 0);
         usersTable = new JTable(userTableModel);
-        refreshUserButton = new JButton("Refresh Akun");
-        updateUserButton = new JButton("Rubah Akun");
-        deleteUserButton = new JButton("Hapus Akun");
+        refreshUserButton = createButton("Refresh Akun", new Color(52, 152, 219), Color.WHITE);
+        updateUserButton = createButton("Rubah Akun", new Color(243, 156, 18), Color.WHITE);
+        deleteUserButton = createButton("Hapus Akun", new Color(220, 53, 69), Color.WHITE);
 
         // Categories Tab
         categoryTableModel = new DefaultTableModel(new String[]{"ID", "Nama Kategori", "Deskripsi"}, 0);
         categoriesTable = new JTable(categoryTableModel);
-        refreshCategoryButton = new JButton("Refresh Kategori");
-        addCategoryButton = new JButton("Tambah Kategori");
-        deleteCategoryButton = new JButton("Hapus Kategori");
-        updateCategoryButton = new JButton("Rubah Kategori");
+        refreshCategoryButton = createButton("Refresh Kategori", new Color(52, 152, 219), Color.WHITE);
+        addCategoryButton = createButton("Tambah Kategori", new Color(46, 204, 113), Color.WHITE);
+        deleteCategoryButton = createButton("Hapus Kategori", new Color(220, 53, 69), Color.WHITE);
+        updateCategoryButton = createButton("Rubah Kategori", new Color(243, 156, 18), Color.WHITE);
 
         // Item Types Tab
         itemTypeTableModel = new DefaultTableModel(new String[]{"ID", "Nama Jenis Item", "Kategori", "Deskripsi"}, 0);
         itemTypeTable = new JTable(itemTypeTableModel);
-        refreshItemTypeButton = new JButton("Refresh Jenis Item");
-        addItemTypeButton = new JButton("Tambah Jenis Item");
-        updateItemTypeButton = new JButton("Rubah Jenis Item");
-        deleteItemTypeButton = new JButton("Hapus Jenis Item");
+        refreshItemTypeButton = createButton("Refresh Jenis Item", new Color(52, 152, 219), Color.WHITE);
+        addItemTypeButton = createButton("Tambah Jenis Item", new Color(46, 204, 113), Color.WHITE);
+        updateItemTypeButton = createButton("Rubah Jenis Item", new Color(243, 156, 18), Color.WHITE);
+        deleteItemTypeButton = createButton("Hapus Jenis Item", new Color(220, 53, 69), Color.WHITE);
 
         // Logout Button
-        logoutButton = new JButton("Logout");
+        logoutButton = createButton("Logout", new Color(149, 165, 166), Color.WHITE);
     }
 
     private void setupLayout() {
@@ -95,25 +95,36 @@ public class DashboardAdmin extends JPanel {
 
         // Users Tab Layout
         JPanel userPanel = new JPanel(new BorderLayout());
+        JPanel userButtonPanel = createButtonPanel(refreshUserButton, updateUserButton, deleteUserButton);
+        userButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Jarak antara tombol dan panel
+        userPanel.add(userButtonPanel, BorderLayout.NORTH);
         userPanel.add(new JScrollPane(usersTable), BorderLayout.CENTER);
-        userPanel.add(createButtonPanel(refreshUserButton, updateUserButton, deleteUserButton), BorderLayout.SOUTH);
         tabbedPane.addTab("Kelola Akun", userPanel);
 
         // Categories Tab Layout
         JPanel categoryPanel = new JPanel(new BorderLayout());
+        JPanel categoryButtonPanel = createButtonPanel(refreshCategoryButton, addCategoryButton, updateCategoryButton, deleteCategoryButton);
+        categoryButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 50, 10)); // Jarak antara tombol dan panel
+        categoryPanel.add(categoryButtonPanel, BorderLayout.NORTH);
         categoryPanel.add(new JScrollPane(categoriesTable), BorderLayout.CENTER);
-        categoryPanel.add(createButtonPanel(refreshCategoryButton, addCategoryButton, updateCategoryButton ,deleteCategoryButton), BorderLayout.SOUTH);
         tabbedPane.addTab("Kelola Kategori", categoryPanel);
 
         // Item Types Tab Layout
         JPanel itemTypePanel = new JPanel(new BorderLayout());
+        JPanel itemTypeButtonPanel = createButtonPanel(refreshItemTypeButton, addItemTypeButton, updateItemTypeButton, deleteItemTypeButton);
+        itemTypeButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 50, 10)); // Jarak antara tombol dan panel
+        itemTypePanel.add(itemTypeButtonPanel, BorderLayout.NORTH);
         itemTypePanel.add(new JScrollPane(itemTypeTable), BorderLayout.CENTER);
-        itemTypePanel.add(createButtonPanel(refreshItemTypeButton, addItemTypeButton, updateItemTypeButton, deleteItemTypeButton), BorderLayout.SOUTH);
         tabbedPane.addTab("Kelola Jenis Item", itemTypePanel);
 
-        // Add TabbedPane and Logout Button
+        // Tambahkan TabbedPane dan Logout Button
         add(tabbedPane, BorderLayout.CENTER);
-        add(logoutButton, BorderLayout.SOUTH);
+
+        // Panel untuk tombol Logout
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        logoutPanel.add(logoutButton);
+        logoutPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 50, 10));
+        add(logoutPanel, BorderLayout.SOUTH);
     }
 
     private JPanel createButtonPanel(JButton... buttons) {
@@ -123,6 +134,16 @@ public class DashboardAdmin extends JPanel {
         }
         return panel;
     }
+     // Helper method untuk create button
+    private JButton createButton(String text, Color bgColor, Color fgColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Sans-Serif", Font.BOLD, 14));
+        button.setBackground(bgColor);
+        button.setForeground(fgColor);
+        button.setFocusPainted(false);
+        return button;
+    }
+    
     private void loadCategories() {
         List<Kategori> categories = categoryController.getAllCategories();
         categoryTableModel.setRowCount(0); // Bersihkan data tabel sebelumnya
@@ -164,7 +185,27 @@ public class DashboardAdmin extends JPanel {
         // User Tab Listeners
         refreshUserButton.addActionListener(e -> loadUsers());
         updateUserButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Fitur Rubah Akun Belum Diimplementasikan"));
-        deleteUserButton.addActionListener(e -> deleteUser());
+         deleteUserButton.addActionListener(e -> {
+            int selectedRow = usersTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String userName = (String) userTableModel.getValueAt(selectedRow, 1);
+                int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Apakah anda yakin ingin menghapus akun '" + userName + "'?",
+                    "Konfirmasi",
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    int userId = (int) userTableModel.getValueAt(selectedRow, 0);
+                    userController.deleteUser(userId);
+                    loadUsers();
+                    JOptionPane.showMessageDialog(this, "Akun berhasil dihapus");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Silahkan pilih akun yang ingin dihapus!");
+            }
+        });
 
         // Category Tab Listeners
         addCategoryButton.addActionListener(e -> {
@@ -214,6 +255,7 @@ public class DashboardAdmin extends JPanel {
 
                         categoryController.updateCategory(updatedCategory);
                         loadCategories();
+                        JOptionPane.showMessageDialog(this, "Kategori berhasil diperbarui!");
                         dialog.dispose();
                     } else {
                         JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
@@ -227,7 +269,27 @@ public class DashboardAdmin extends JPanel {
         });
 
         refreshCategoryButton.addActionListener(e -> loadCategories());
-        deleteCategoryButton.addActionListener(e -> deleteCategory());
+        deleteCategoryButton.addActionListener(e -> {
+        int selectedRow = categoriesTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String categoryName = (String) categoryTableModel.getValueAt(selectedRow, 1);
+                int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Apakah anda yakin ingin menghapus kategori '" + categoryName + "'?",
+                    "Konfirmasi",
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    int categoryId = (int) categoryTableModel.getValueAt(selectedRow, 0);
+                    categoryController.deleteCategory(categoryId);
+                    loadCategories();
+                    JOptionPane.showMessageDialog(this, "Kategori berhasil dihapus");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Silahkan pilih kategori yang ingin dihapus!");
+            }
+        });
 
         // Item Type Tab Listeners
         // Tombol "Add" untuk menambahkan Item Type
@@ -299,6 +361,7 @@ public class DashboardAdmin extends JPanel {
 
                             itemTypeController.updateItemType(updatedItemType);
                             loadItemTypes();
+                            JOptionPane.showMessageDialog(this, "Item berhasil diperbarui!");
                             dialog.dispose();
                         } else {
                             JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
@@ -315,10 +378,42 @@ public class DashboardAdmin extends JPanel {
         });
 
         refreshItemTypeButton.addActionListener(e -> loadItemTypes());
-        deleteItemTypeButton.addActionListener(e -> deleteItemType());
+        deleteItemTypeButton.addActionListener(e -> {
+        int selectedRow = itemTypeTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String itemTypeName = (String) itemTypeTableModel.getValueAt(selectedRow, 1);
+                int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    "Apakah anda yakin ingin menghapus item '" + itemTypeName + "'?",
+                    "Konfirmasi",
+                    JOptionPane.YES_NO_OPTION
+                );
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    int itemTypeId = (int) itemTypeTableModel.getValueAt(selectedRow, 0);
+                    itemTypeController.deleteItemType(itemTypeId);
+                    loadItemTypes();
+                    JOptionPane.showMessageDialog(this, "Jenis item berhasil dihapus");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Silahkan pilih item yang ingin dihapus!");
+            }
+        }); 
 
         // Logout Listener
-        logoutButton.addActionListener(e -> mainFrame.showLogin());
+         logoutButton.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                mainFrame, 
+                "Apakah Anda yakin ingin logout?", 
+                "Konfirmasi Logout", 
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(this, "Anda berhasil logout");
+                mainFrame.showLogin();
+            }
+        });
     }
 
     public void loadUsers() {
