@@ -168,11 +168,9 @@ public class HalamanRegister extends JPanel {
                     "Registration Success",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            // Simpan email pengguna untuk digunakan di OTPPanel
-            mainFrame.setEmailForVerification(user.getEmail());
-
             // Redirect ke OTPPanel
-            mainFrame.showOTP();
+            mainFrame.showOTP(user.getEmail());
+
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,

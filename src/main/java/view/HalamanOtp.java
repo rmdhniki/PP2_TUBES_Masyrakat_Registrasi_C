@@ -22,7 +22,7 @@ public class HalamanOtp extends JPanel {
 
     public HalamanOtp(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        // this.type = "register"; // Set a default type for register
+        this.type = "register"; // Set a default type for register
         initComponents();
         setupLayout();
         setupListeners();
@@ -103,8 +103,9 @@ public class HalamanOtp extends JPanel {
                             "OTP Verified Successfully!",
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
-                    if(type != null && type.equals("register"))
+                    if(type.equals("register")){
                         mainFrame.showLogin();
+                    }
                     else{
                         mainFrame.showResetPasswordForm(email);
                     }
@@ -122,13 +123,14 @@ public class HalamanOtp extends JPanel {
                         JOptionPane.ERROR_MESSAGE);
             }
         });
-        if(type != null && type.equals("register")){
-            backButton.addActionListener(e -> mainFrame.showRegister());
-        }
-        else{
-            backButton.addActionListener(e -> mainFrame.showForgotPassword());
-        }
 
+        backButton.addActionListener(e -> {
+            if (type != null && type.equals("register")) {
+                mainFrame.showRegister();
+            } else {
+                mainFrame.showForgotPassword();
+            }
+        });
 
     }
 }

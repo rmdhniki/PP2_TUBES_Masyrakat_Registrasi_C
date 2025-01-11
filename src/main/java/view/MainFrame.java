@@ -88,8 +88,8 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainPanel, "REGISTER");
     }
 
-    public void showOTP() {
-        otpPanel = new HalamanOtp(this);
+    public void showOTP(String email) {
+        otpPanel = new HalamanOtp(this, email, "register");
         mainPanel.add(otpPanel,"OTP");
         cardLayout.show(mainPanel, "OTP");
     }
