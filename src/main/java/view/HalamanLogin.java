@@ -4,12 +4,17 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -47,7 +52,7 @@ public class HalamanLogin extends JPanel {
         loginButton = createButton("Login", new Color(0x187824), Color.WHITE);
         registerButton = createButton("Register", new Color(0x187824), Color.WHITE);
         forgotPasswordLabel = new JLabel("Forgot Password? Click Here");
-        forgotPasswordLabel.setForeground(Color.BLUE);
+         forgotPasswordLabel.setForeground(new Color(0x00008B));
         forgotPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         Dimension fieldSize = new Dimension(300, 40);
@@ -68,7 +73,7 @@ public class HalamanLogin extends JPanel {
 
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(new Color(0x66986C));
-        JLabel titleLabel = new JLabel("E-WastePas");
+        JLabel titleLabel = new JLabel("Login to E-WastePas");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
         headerPanel.add(titleLabel);
@@ -83,9 +88,15 @@ public class HalamanLogin extends JPanel {
         formGbc.insets = new Insets(5, 10, 5, 10);
 
 
-        formPanel.add(new JLabel("Email:", SwingConstants.LEFT), formGbc);
+         JLabel emailLabel = new JLabel("Email:", SwingConstants.LEFT);
+       emailLabel.setForeground(Color.WHITE);
+       emailLabel.setFont(emailLabel.getFont().deriveFont(Font.BOLD, 14));
+        formPanel.add(emailLabel, formGbc);
         formPanel.add(emailField, formGbc);
-        formPanel.add(new JLabel("Password:", SwingConstants.LEFT), formGbc);
+        JLabel passwordLabel = new JLabel("Password:", SwingConstants.LEFT);
+       passwordLabel.setForeground(Color.WHITE);
+        passwordLabel.setFont(passwordLabel.getFont().deriveFont(Font.BOLD, 14));
+        formPanel.add(passwordLabel, formGbc);
         formPanel.add(passwordField, formGbc);
         formPanel.add(forgotPasswordLabel, formGbc);
         formPanel.add(Box.createVerticalStrut(10), formGbc);
@@ -98,18 +109,37 @@ public class HalamanLogin extends JPanel {
         add(Box.createVerticalStrut(20), gbc);
         add(formPanel, gbc);
     }
-    // Helper method untuk create button
-    private JButton createButton(String text, Color bgColor, Color fgColor) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Sans-Serif", Font.BOLD, 16));
-        button.setBackground(bgColor);
+     private JButton createButton(String text, Color bgColor, Color fgColor) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                if (getModel().isArmed()) {
+                    g.setColor(getBackground().darker());
+                } else {
+                   g.setColor(getBackground());
+                }
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                int cornerRadius = 15;
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius));
+                 super.paintComponent(g2);
+                g2.dispose();
+           }
+            @Override
+            public void updateUI() {
+                super.updateUI();
+                setOpaque(false);
+              setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+            }
+        };
+       button.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+       button.setBackground(bgColor);
         button.setForeground(fgColor);
         button.setFocusPainted(false);
         button.setPreferredSize(new Dimension(300, 50));
-        button.setMaximumSize(new Dimension(300,50));
-        return button;
+       button.setMaximumSize(new Dimension(300,50));
+       return button;
     }
-
     private void setupListeners() {
         loginButton.addActionListener(e -> {
             String email = emailField.getText();
@@ -154,10 +184,21 @@ public class HalamanLogin extends JPanel {
 
         registerButton.addActionListener(e -> mainFrame.showRegister());
         forgotPasswordLabel.addMouseListener(new MouseAdapter() {
+           @Override
+            public void mouseEntered(MouseEvent e) {
+                forgotPasswordLabel.setForeground(Color.WHITE);
+            }
+
+            @Override
+           public void mouseExited(MouseEvent e) {
+                forgotPasswordLabel.setForeground(new Color(0x00008B));
+           }
+
             @Override
             public void mouseClicked(MouseEvent e) {
-                mainFrame.showForgotPassword();
+                 forgotPasswordLabel.setForeground(new Color(0x00008B));
+               mainFrame.showForgotPassword();
             }
-        });
+       });
     }
 }
