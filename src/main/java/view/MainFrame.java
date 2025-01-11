@@ -1,8 +1,12 @@
 package view;
 
+import java.awt.CardLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import controller.ControllerUser;
-import javax.swing.*;
-import java.awt.*;
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
@@ -75,7 +79,7 @@ public class MainFrame extends JFrame {
     private void setupFrame() {
         setTitle("E-WastePas");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(420, 800);
         setLocationRelativeTo(null);
         setResizable(false);
     }

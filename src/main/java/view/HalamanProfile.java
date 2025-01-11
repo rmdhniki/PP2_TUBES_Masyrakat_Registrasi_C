@@ -1,14 +1,36 @@
 package view;
 
-import controller.ControllerUser;
-import model.User;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.time.LocalDate;
-import java.awt.geom.Ellipse2D;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+
+import controller.ControllerUser;
+import model.User;
 
 public class HalamanProfile extends JPanel {
     private final MainFrame mainFrame;
@@ -17,7 +39,7 @@ public class HalamanProfile extends JPanel {
     private JTextField nameField;
     private JTextField emailField;
     private JTextField addressField;
-    private JTextField birthDateField; // Format: yyyy-MM-dd
+    private JTextField birthDateField;
     private JLabel profilePictureLabel;
     private JButton saveButton;
     private JButton changePasswordButton;
@@ -29,7 +51,7 @@ public class HalamanProfile extends JPanel {
     public HalamanProfile(MainFrame mainFrame, Integer userId) {
         this.mainFrame = mainFrame;
         this.userController = new ControllerUser();
-        this.user = userController.getUserById(userId); // Ambil data user berdasarkan ID
+        this.user = userController.getUserById(userId);
 
         initComponents();
         populateFields();
@@ -66,25 +88,25 @@ public class HalamanProfile extends JPanel {
         profilePictureLabel.setPreferredSize(new Dimension(150, 150));
 
         saveButton = createButton("Save", new Color(0x187824), Color.WHITE);
-        changePasswordButton = createButton("Change Password",new Color(0x187824), Color.WHITE);
+        changePasswordButton = createButton("Change Password", new Color(0x80251A), Color.WHITE);
+        uploadPhotoButton = createButton("Upload Photo", new Color(0xADD8E6), Color.BLACK);
         backButton = createButton("Back", new Color(0x80251A), Color.WHITE);
-        uploadPhotoButton = createButton("Upload Photo",new Color(0x187824), Color.WHITE);
 
-        Dimension fieldSize = new Dimension(300, 40);
+        Dimension fieldSize = new Dimension(280, 40);
         nameField.setPreferredSize(fieldSize);
         addressField.setPreferredSize(fieldSize);
         birthDateField.setPreferredSize(fieldSize);
 
-
     }
-    private  JButton createButton(String text, Color bgColor, Color fgColor) {
+
+     private JButton createButton(String text, Color bgColor, Color fgColor) {
         JButton button = new JButton(text);
-        button.setPreferredSize(new Dimension(300, 50));
-        button.setFont(new Font("Sans-Serif", Font.BOLD, 16));
+        button.setFont(new Font("Sans-Serif", Font.BOLD, 14));
         button.setBackground(bgColor);
         button.setForeground(fgColor);
         button.setFocusPainted(false);
-        button.setMaximumSize(new Dimension(300,50));
+        button.setPreferredSize(new Dimension(150, 30));
+       button.setMaximumSize(new Dimension(150,30));
         return button;
     }
 
@@ -119,65 +141,100 @@ public class HalamanProfile extends JPanel {
         }
     }
 
-    private void setupLayout() {
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+   private void setupLayout() {
+         setLayout(new BorderLayout());
         setBackground(new Color(0x66986C));
 
-        JPanel headerPanel = new JPanel(new BorderLayout());
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         headerPanel.setBackground(new Color(0x66986C));
-        headerPanel.add(backButton, BorderLayout.WEST);
+        backButton.setPreferredSize(new Dimension(80, 30));
+        backButton.setMaximumSize(new Dimension(80, 30));
+        headerPanel.add(backButton);
+        add(headerPanel, BorderLayout.NORTH);
 
-        JPanel profilePanel = new JPanel();
-        profilePanel.setBackground(new Color(0x66986C));
-        profilePanel.setLayout(new BoxLayout(profilePanel, BoxLayout.Y_AXIS));
-        profilePanel.add(Box.createVerticalStrut(10));
-        profilePanel.add(profilePictureLabel);
-        profilePanel.add(Box.createVerticalStrut(10));
-        profilePanel.add(uploadPhotoButton);
-
-        JPanel formPanel = new JPanel();
-        formPanel.setBackground(new Color(0x66986C));
-        formPanel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        JPanel mainPanel = new JPanel();
+         mainPanel.setBackground(new Color(0x66986C));
+         mainPanel.setLayout(new GridBagLayout());
+         GridBagConstraints gbc = new GridBagConstraints();
+         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.NORTH;
 
-        gbc.gridx = 0;
+
+         JPanel profilePanel = new JPanel(new GridBagLayout());
+         profilePanel.setBackground(new Color(0x66986C));
+         GridBagConstraints profileGbc = new GridBagConstraints();
+        profileGbc.gridx = 0;
+        profileGbc.gridy = 0;
+        profileGbc.insets = new Insets(5, 5, 5, 5);
+         profileGbc.anchor = GridBagConstraints.CENTER;
+        profilePanel.add(profilePictureLabel, profileGbc);
+
+          profileGbc.gridy++;
+          profileGbc.insets = new Insets(10, 10, 10, 10);
+        profilePanel.add(uploadPhotoButton, profileGbc);
+         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(new JLabel("Nama Lengkap:", SwingConstants.LEFT), gbc);
+       gbc.gridwidth = 2;
+         mainPanel.add(profilePanel, gbc);
 
-        gbc.gridx = 1;
-        formPanel.add(nameField, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+         namePanel.setBackground(new Color(0x66986C));
+       namePanel.add(new JLabel("Nama Lengkap:"));
+        mainPanel.add(namePanel, gbc);
+
+         gbc.gridx = 1;
+        JPanel nameInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+         nameInputPanel.setBackground(new Color(0x66986C));
+         nameInputPanel.add(nameField);
+          mainPanel.add(nameInputPanel, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        formPanel.add(new JLabel("Alamat:", SwingConstants.LEFT), gbc);
+        gbc.gridy++;
+          JPanel addressPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+           addressPanel.setBackground(new Color(0x66986C));
+          addressPanel.add(new JLabel("Alamat:"));
+        mainPanel.add(addressPanel, gbc);
 
         gbc.gridx = 1;
-        formPanel.add(addressField, gbc);
+        JPanel addressInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+         addressInputPanel.setBackground(new Color(0x66986C));
+         addressInputPanel.add(addressField);
+        mainPanel.add(addressInputPanel, gbc);
+
+         gbc.gridx = 0;
+        gbc.gridy++;
+          JPanel birthPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+           birthPanel.setBackground(new Color(0x66986C));
+          birthPanel.add(new JLabel("Tanggal Lahir:"));
+        mainPanel.add(birthPanel, gbc);
+
+         gbc.gridx = 1;
+         JPanel birthInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+          birthInputPanel.setBackground(new Color(0x66986C));
+          birthInputPanel.add(birthDateField);
+        mainPanel.add(birthInputPanel, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        formPanel.add(new JLabel("Tanggal Lahir:", SwingConstants.LEFT), gbc);
-
-        gbc.gridx = 1;
-        formPanel.add(birthDateField, gbc);
-
-        JPanel buttonPanel = new JPanel();
+        gbc.gridy++;
+       gbc.gridwidth = 2;
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.setBackground(new Color(0x66986C));
         buttonPanel.add(saveButton);
+        // changePasswordButton.setPreferredSize(new Dimension(150, 30));
+          changePasswordButton.setMaximumSize(new Dimension(170,30)); // to make text fit
         buttonPanel.add(changePasswordButton);
 
+       mainPanel.add(buttonPanel, gbc);
 
-
-        add(headerPanel);
-        add(Box.createVerticalStrut(10));
-        add(profilePanel);
-        add(Box.createVerticalStrut(10));
-        add(formPanel);
-        add(Box.createVerticalStrut(20));
-        add(buttonPanel);
+        add(new JScrollPane(mainPanel), BorderLayout.CENTER);
     }
+
 
     private void setupListeners() {
         saveButton.addActionListener(e -> {
@@ -232,12 +289,12 @@ public class HalamanProfile extends JPanel {
             }
         });
 
-        changePasswordButton.addActionListener(e ->{
+       changePasswordButton.addActionListener(e ->{
             FormChangePassword dialog = new FormChangePassword((JFrame) SwingUtilities.getWindowAncestor(this), user.getEmail(), mainFrame);
             dialog.setVisible(true);
         });
 
-        backButton.addActionListener(e -> {
+       backButton.addActionListener(e -> {
             mainFrame.showHalamanUtama();
         });
     }
