@@ -9,6 +9,7 @@ import model.JenisSampah;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -93,7 +94,7 @@ public class DashboardAdmin extends JPanel {
         generatePdfItemTypeButton = createButton("Cetak Laporan Item Type", new Color(26, 188, 156), Color.WHITE);
 
         // Logout Button
-        logoutButton = createButton("Logout", new Color(149, 165, 166), Color.WHITE);
+        logoutButton = createButton("Logout", new Color(0x800000), Color.WHITE); // Merah Maroon
     }
 
     private void setupLayout() {
@@ -140,7 +141,7 @@ public class DashboardAdmin extends JPanel {
         }
         return panel;
     }
-     // Helper method untuk create button
+    // Helper method untuk create button
     private JButton createButton(String text, Color bgColor, Color fgColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Sans-Serif", Font.BOLD, 14));
@@ -149,7 +150,7 @@ public class DashboardAdmin extends JPanel {
         button.setFocusPainted(false);
         return button;
     }
-    
+
     private void loadCategories() {
         List<Kategori> categories = categoryController.getAllCategories();
         categoryTableModel.setRowCount(0); // Bersihkan data tabel sebelumnya
@@ -186,20 +187,76 @@ public class DashboardAdmin extends JPanel {
         }
     }
 
+    private void loadUsers() {
+        List<User> users = userController.getAllUsers();
+        userTableModel.setRowCount(0);
+
+        for (User user : users) {
+            userTableModel.addRow(new Object[]{
+                    user.getId(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getAddress(),
+                    user.getBirthDate() != null ? user.getBirthDate() : "",
+                    user.getRoleName() != null ? user.getRoleName() : "User"
+            });
+        }
+    }
 
     private void setupListeners() {
         // User Tab Listeners
         refreshUserButton.addActionListener(e -> loadUsers());
-        updateUserButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Fitur Rubah Akun Belum Diimplementasikan"));
+        updateUserButton.addActionListener(e -> {
+            int selectedRow = usersTable.getSelectedRow();
+            if (selectedRow != -1) {
+                int userId = (int) userTableModel.getValueAt(selectedRow, 0);
+                User selectedUser = userController.getUserById(userId);
+                FormDialogUser dialog = new FormDialogUser((JFrame) SwingUtilities.getWindowAncestor(this), "Ubah Akun", userController,selectedUser);
+
+
+                dialog.addSaveButtonListener(event -> {
+                    String name = dialog.getName();
+                    String email = dialog.getEmail();
+                    String address = dialog.getAddress();
+                    LocalDate birthDate = dialog.getBirthDate();
+                    int roleId = dialog.getRoleId();
+
+                    if (!name.isEmpty() && !email.isEmpty() && !address.isEmpty() && birthDate!=null) {
+                        selectedUser.setName(name);
+                        selectedUser.setEmail(email);
+                        selectedUser.setAddress(address);
+                        selectedUser.setBirthDate(birthDate);
+                        selectedUser.setRoleId(roleId);
+
+                        boolean updated = userController.updateUser(selectedUser);
+                        if (updated) {
+                            loadUsers();
+                            JOptionPane.showMessageDialog(this, "User berhasil diperbarui!");
+                            dialog.dispose();
+                        }else {
+                            JOptionPane.showMessageDialog(this, "Failed to updated user");
+                        }
+
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
+                    }
+                });
+                dialog.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Silahkan pilih akun yang ingin diubah!");
+            }
+        });
+
+
         deleteUserButton.addActionListener(e -> {
             int selectedRow = usersTable.getSelectedRow();
             if (selectedRow != -1) {
                 String userName = (String) userTableModel.getValueAt(selectedRow, 1);
                 int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Apakah anda yakin ingin menghapus akun '" + userName + "'?",
-                    "Konfirmasi",
-                    JOptionPane.YES_NO_OPTION
+                        this,
+                        "Apakah anda yakin ingin menghapus akun '" + userName + "'?",
+                        "Konfirmasi",
+                        JOptionPane.YES_NO_OPTION
                 );
 
                 if (confirm == JOptionPane.YES_OPTION) {
@@ -282,14 +339,14 @@ public class DashboardAdmin extends JPanel {
 
         refreshCategoryButton.addActionListener(e -> loadCategories());
         deleteCategoryButton.addActionListener(e -> {
-        int selectedRow = categoriesTable.getSelectedRow();
+            int selectedRow = categoriesTable.getSelectedRow();
             if (selectedRow != -1) {
                 String categoryName = (String) categoryTableModel.getValueAt(selectedRow, 1);
                 int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Apakah anda yakin ingin menghapus kategori '" + categoryName + "'?",
-                    "Konfirmasi",
-                    JOptionPane.YES_NO_OPTION
+                        this,
+                        "Apakah anda yakin ingin menghapus kategori '" + categoryName + "'?",
+                        "Konfirmasi",
+                        JOptionPane.YES_NO_OPTION
                 );
 
                 if (confirm == JOptionPane.YES_OPTION) {
@@ -303,11 +360,11 @@ public class DashboardAdmin extends JPanel {
             }
         });
         generatePdfCategoryButton.addActionListener(e -> {
-                List<Kategori> categories = categoryController.getAllCategories();
-                String filePath = "category_report.pdf";
-                GeneratePdf.generateCategoryReport(categories, filePath);
-                JOptionPane.showMessageDialog(this, "Laporan PDF Berhasil Dicetak di: " + filePath);
-            });
+            List<Kategori> categories = categoryController.getAllCategories();
+            String filePath = "category_report.pdf";
+            GeneratePdf.generateCategoryReport(categories, filePath);
+            JOptionPane.showMessageDialog(this, "Laporan PDF Berhasil Dicetak di: " + filePath);
+        });
 
         // Item Type Tab Listeners
         // Tombol "Add" untuk menambahkan Item Type
@@ -368,18 +425,18 @@ public class DashboardAdmin extends JPanel {
                     dialog.addSaveButtonListener(event -> {
                         String newName = dialog.getItemTypeName();
                         String newDescription = dialog.getItemTypeDescription();
-                        Kategori selectedCategory = dialog.getSelectedCategory();
+                        Kategori newCategory = dialog.getSelectedCategory();
 
-                        if (!newName.isEmpty() && !newDescription.isEmpty() && selectedCategory != null) {
+                        if (!newName.isEmpty() && !newDescription.isEmpty() && newCategory != null) {
                             JenisSampah updatedItemType = new JenisSampah();
                             updatedItemType.setId(itemTypeId);
                             updatedItemType.setName(newName);
                             updatedItemType.setDescription(newDescription);
-                            updatedItemType.setCategoryId(selectedCategory.getId());
+                            updatedItemType.setCategoryId(newCategory.getId());
 
                             itemTypeController.updateItemType(updatedItemType);
                             loadItemTypes();
-                            JOptionPane.showMessageDialog(this, "Item berhasil diperbarui!");
+                            JOptionPane.showMessageDialog(this, "Jenis Item berhasil diperbarui!");
                             dialog.dispose();
                         } else {
                             JOptionPane.showMessageDialog(this, "Semua field harus diisi!");
@@ -387,104 +444,43 @@ public class DashboardAdmin extends JPanel {
                     });
 
                     dialog.setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Kategori yang dipilih tidak valid!");
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Silahkan pilih jenis item yang ingin diubah!");
             }
         });
 
+
         refreshItemTypeButton.addActionListener(e -> loadItemTypes());
         deleteItemTypeButton.addActionListener(e -> {
-        int selectedRow = itemTypeTable.getSelectedRow();
+            int selectedRow = itemTypeTable.getSelectedRow();
             if (selectedRow != -1) {
-                String itemTypeName = (String) itemTypeTableModel.getValueAt(selectedRow, 1);
+                String itemName = (String) itemTypeTableModel.getValueAt(selectedRow, 1);
                 int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Apakah anda yakin ingin menghapus item '" + itemTypeName + "'?",
-                    "Konfirmasi",
-                    JOptionPane.YES_NO_OPTION
+                        this,
+                        "Apakah anda yakin ingin menghapus jenis item '" + itemName + "'?",
+                        "Konfirmasi",
+                        JOptionPane.YES_NO_OPTION
                 );
 
                 if (confirm == JOptionPane.YES_OPTION) {
                     int itemTypeId = (int) itemTypeTableModel.getValueAt(selectedRow, 0);
                     itemTypeController.deleteItemType(itemTypeId);
                     loadItemTypes();
-                    JOptionPane.showMessageDialog(this, "Jenis item berhasil dihapus");
+                    JOptionPane.showMessageDialog(this, "Jenis Item berhasil dihapus");
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Silahkan pilih item yang ingin dihapus!");
+                JOptionPane.showMessageDialog(this, "Silahkan pilih jenis item yang ingin dihapus!");
             }
         });
-        generatePdfItemTypeButton.addActionListener(e -> {
+        generatePdfItemTypeButton.addActionListener(e ->{
             List<JenisSampah> itemTypes = itemTypeController.getAllItemTypes();
-                String filePath = "item_type_report.pdf";
-                GeneratePdf.generateItemTypeReport(itemTypes, filePath);
-                JOptionPane.showMessageDialog(this, "Laporan PDF Berhasil Dicetak di: " + filePath);
-            });
-
-        // Logout Listener
-        logoutButton.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                mainFrame, 
-                "Apakah Anda yakin ingin logout?", 
-                "Konfirmasi Logout", 
-                JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                JOptionPane.showMessageDialog(this, "Anda berhasil logout");
-                mainFrame.showLogin();
-            }
+            String filePath = "itemtype_report.pdf";
+            GeneratePdf.generateItemTypeReport(itemTypes, filePath);
+            JOptionPane.showMessageDialog(this, "Laporan PDF Berhasil Dicetak di: " + filePath);
         });
-    }
 
-    public void loadUsers() {
-        userTableModel.setRowCount(0);
-        List<User> users = userController.getAllUsers();
-        for (User user : users) {
-            userTableModel.addRow(new Object[]{
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getAddress(),
-                    user.getBirthDate(),
-                    user.getPhotoPath()
-            });
-        }
-    }
-
-    private void deleteUser() {
-        int selectedRow = usersTable.getSelectedRow();
-        if (selectedRow != -1) {
-            int userId = (int) userTableModel.getValueAt(selectedRow, 0);
-            userController.deleteUser(userId);
-            loadUsers();
-        } else {
-            JOptionPane.showMessageDialog(this, "Silahkan pilih akun yang ingin dihapus!");
-        }
-    }
-
-    private void deleteCategory() {
-        int selectedRow = categoriesTable.getSelectedRow();
-        if (selectedRow != -1) {
-            int categoryId = (int) categoryTableModel.getValueAt(selectedRow, 0);
-            categoryController.deleteCategory(categoryId);
-            loadCategories();
-        } else {
-            JOptionPane.showMessageDialog(this, "Silahkan pilih kategori yang ingin dihapus!");
-        }
-    }
-
-    private void deleteItemType() {
-        int selectedRow = itemTypeTable.getSelectedRow();
-        if (selectedRow != -1) {
-            int itemTypeId = (int) itemTypeTableModel.getValueAt(selectedRow, 0);
-            itemTypeController.deleteItemType(itemTypeId);
-            loadItemTypes();
-        } else {
-            JOptionPane.showMessageDialog(this, "Silahkan pilih jenis item yang ingin dihapus!");
-        }
+        // Logout Button Listener
+        logoutButton.addActionListener(e -> mainFrame.showLogin());
     }
 }

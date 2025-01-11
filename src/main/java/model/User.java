@@ -17,6 +17,7 @@ public class User {
     private Boolean isUsed;
     private Boolean isVerified;
     private String photoPath;
+    private String roleName; // Tambahkan field roleName
 
     // Getters and Setters
 
@@ -122,5 +123,12 @@ public class User {
 
     public void setPhotoPath(String photoPath) {
         this.photoPath = photoPath;
+    }
+    public String getRoleName() { // Tambahkan getter untuk roleName
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) { // Tambahkan setter untuk roleName
+        this.roleName = roleName;
     }
 }
