@@ -1,40 +1,21 @@
 package model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 public class User {
-    private Integer id;
-    private String name;
+    private int id;
     private String email;
     private String password;
-    private String address;
-    private LocalDate birthDate;
-    private LocalDateTime createdAt;
-    private Integer roleId;
-    private String otp;
-    private LocalDateTime otpExpiry;
-    private Boolean isUsed;
-    private Boolean isVerified;
-    private String photoPath;
+    private String fullName;
+    private String otpCode;
 
-    // Getters and Setters
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getEmail() {
         return email;
@@ -52,75 +33,30 @@ public class User {
         this.password = password;
     }
 
-    public String getAddress() {
-        return address;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
+    public String getOtpCode() {
+        return otpCode;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
-        this.birthDate = birthDate;
+    public void setOtpCode(String otpCode) {
+        this.otpCode = otpCode;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Integer roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
-
-    public LocalDateTime getOtpExpiry() {
-        return otpExpiry;
-    }
-
-    public void setOtpExpiry(LocalDateTime otpExpiry) {
-        this.otpExpiry = otpExpiry;
-    }
-
-    public Boolean getIsUsed() {
-        return isUsed;
-    }
-
-    public void setIsUsed(Boolean isUsed) {
-        this.isUsed = isUsed;
-    }
-
-    public Boolean getVerified() {
-        return isVerified;
-    }
-
-    public void setVerified(Boolean verified) {
-        isVerified = verified;
-    }
-
-    public String getPhotoPath() {
-        return photoPath;
-    }
-
-    public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", otpCode='" + otpCode + '\'' +
+                '}';
     }
 }

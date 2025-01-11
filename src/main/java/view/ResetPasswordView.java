@@ -4,21 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.border.EmptyBorder;
-import controller.ControllerUser;
 
-public class HalamanForgotPassword extends JPanel {
-    private final MainFrame mainFrame;
+public class ResetPasswordView extends JFrame {
     private JTextField txtEmail;
     private JButton btnBack;
     private JButton btnResetPassword;
     private JLabel lblTitle;
-    private ControllerUser controllerUser;
 
-    public HalamanForgotPassword(MainFrame mainFrame) {
-        this.mainFrame = mainFrame;
-        this.controllerUser = new ControllerUser();
-
-        setLayout(new BorderLayout());
+    public ResetPasswordView() {
+        setTitle("Reset Password");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(420, 700);
+        setLocationRelativeTo(null);
+        setResizable(false);
 
         // Main Panel
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -66,7 +64,6 @@ public class HalamanForgotPassword extends JPanel {
 
         // Add main panel to frame
         add(mainPanel);
-        setupListeners();
     }
     // Helper method to create styled JTextField
     private JTextField createTextField(String placeholder) {
@@ -103,33 +100,15 @@ public class HalamanForgotPassword extends JPanel {
         return button;
     }
 
+    public void addResetPasswordListener(ActionListener actionListener) {
+        btnResetPassword.addActionListener(actionListener);
+    }
+
+    public void addBackListener(ActionListener actionListener) {
+        btnBack.addActionListener(actionListener);
+    }
 
     public JTextField getTxtEmail() {
         return txtEmail;
     }
-    private void setupListeners(){
-        btnBack.addActionListener(e -> mainFrame.showLogin());
-        btnResetPassword.addActionListener(e -> {
-            String email = txtEmail.getText();
-            if (email.isEmpty()) {
-                JOptionPane.showMessageDialog(this,
-                        "Email must be filled",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            try {
-                controllerUser.requestPasswordReset(email);
-                mainFrame.showResetPasswordOtp(email);
-            }
-            catch (Exception exception){
-                JOptionPane.showMessageDialog(this,
-                        "Error sending email: " + exception.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-
-        });
-    }
-
 }
