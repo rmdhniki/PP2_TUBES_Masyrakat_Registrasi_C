@@ -57,7 +57,15 @@ public interface MapperUser {
     User getUserById(Integer id);
 
     // Get all users
-    @Select("SELECT * FROM users")
+    @Select("SELECT u.id, u.name, u.email, u.address, u.birth_date, r.name AS role_name FROM users u LEFT JOIN role r ON u.role_id = r.id")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "email", column = "email"),
+            @Result(property = "address", column = "address"),
+            @Result(property = "birthDate", column = "birth_date"),
+            @Result(property = "roleName", column = "role_name")
+    })
     List<User> getAllUsers();
 
     // Delete user by ID

@@ -55,7 +55,8 @@ public class GeneratePdf {
             document.close();
             System.out.println("Laporan PDF berhasil dibuat: " + filePath);
         } catch (DocumentException | FileNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Cetak detail error
+            System.err.println("Gagal membuat laporan PDF untuk User: " + e.getMessage());
         }
     }
     public static void generateCategoryReport(List<Kategori> categories, String filePath) {
@@ -93,8 +94,9 @@ public class GeneratePdf {
             document.close();
             System.out.println("Laporan PDF berhasil dibuat: " + filePath);
 
-        } catch (DocumentException | FileNotFoundException e) {
+        }  catch (DocumentException | IOException e) {
             e.printStackTrace();
+            System.err.println("Gagal membuat laporan PDF untuk Category: " + e.getMessage());
         }
     }
 
@@ -137,8 +139,9 @@ public class GeneratePdf {
             document.close();
             System.out.println("Laporan PDF berhasil dibuat: " + filePath);
 
-        } catch (DocumentException | FileNotFoundException e) {
+        } catch (DocumentException | IOException e) {
             e.printStackTrace();
+            System.err.println("Gagal membuat laporan PDF untuk Item Type: " + e.getMessage());
         }
     }
 }
