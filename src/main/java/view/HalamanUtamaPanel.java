@@ -6,29 +6,29 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import controller.ControllerJenisSampah;
 import controller.ControllerKategori;
+import controller.ControllerUser;
 import model.JenisSampah;
 import model.Kategori;
 
@@ -37,6 +37,7 @@ public class HalamanUtamaPanel extends JPanel {
     private final MainFrame mainFrame;
     private final ControllerKategori categoryController;
     private final ControllerJenisSampah itemTypeController;
+    private final ControllerUser userController;
 
     private JPanel navbar;
     private JPanel categoryPanel;
@@ -50,10 +51,11 @@ public class HalamanUtamaPanel extends JPanel {
         this.mainFrame = mainFrame;
         this.categoryController = new ControllerKategori();
         this.itemTypeController = new ControllerJenisSampah();
+        this.userController = new ControllerUser();
 
         initComponents();
         setupLayout();
-        loadCategories();
+        loadDefaultCategoryItems();
     }
 
     private void initComponents() {
@@ -65,13 +67,29 @@ public class HalamanUtamaPanel extends JPanel {
         itemTypeTable.setFocusable(false);
         itemTypeTable.setRowSelectionAllowed(false);
         itemTypeTable.setDefaultEditor(Object.class, null);
+        itemTypeTable.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer()); // Set custom renderer for "Deskripsi"
         imageLabel = new JLabel();
         titleLabel = new JLabel("Welcome to E-Waste Category", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Sans-Serif", Font.BOLD, 16));
         titleLabel.setForeground(Color.WHITE);
         itemPanel = new JPanel(new BorderLayout());
 
+        itemTypeTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = itemTypeTable.rowAtPoint(e.getPoint());
+                int column = itemTypeTable.columnAtPoint(e.getPoint());
 
+                if (row >= 0 && column == 1) {
+                    Object value = itemTypeTable.getValueAt(row, column);
+                    if (value != null){
+                        String description = value.toString();
+                        showDescriptionDialog(description);
+                    }
+
+                }
+            }
+        });
     }
 
     // Memisahkan pembuatan navbar
@@ -79,6 +97,7 @@ public class HalamanUtamaPanel extends JPanel {
         JPanel navbar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton logoutButton = new JButton("Logout");
         JButton profileButton = new JButton("Profil");
+
 
         // Tambahkan ActionListener untuk tombol Profil
         profileButton.addActionListener(e -> mainFrame.showProfile());
@@ -96,6 +115,7 @@ public class HalamanUtamaPanel extends JPanel {
                 mainFrame.showLogin();
             }
         });
+
         profileButton.setBackground(new Color(0x187824));
         profileButton.setForeground(Color.WHITE);
         profileButton.setFocusPainted(false);
@@ -105,6 +125,7 @@ public class HalamanUtamaPanel extends JPanel {
         logoutButton.setForeground(Color.WHITE);
         logoutButton.setFocusPainted(false);
         logoutButton.setOpaque(true);
+
 
         navbar.add(profileButton);
         navbar.add(logoutButton);
@@ -119,6 +140,7 @@ public class HalamanUtamaPanel extends JPanel {
         categoryPanel.setOpaque(false);
         return categoryPanel;
     }
+
     private void setupLayout() {
         setLayout(new BorderLayout());
         add(navbar, BorderLayout.NORTH);
@@ -130,7 +152,6 @@ public class HalamanUtamaPanel extends JPanel {
         mainContentPanel.add(itemDisplayPanel, BorderLayout.CENTER);
         add(mainContentPanel, BorderLayout.CENTER);
         add(createTitlePanel(),BorderLayout.SOUTH);
-
     }
     private JPanel createTitlePanel(){
         JPanel titlePanel = new JPanel(new BorderLayout());
@@ -163,7 +184,6 @@ public class HalamanUtamaPanel extends JPanel {
     }
 
 
-
     private void loadCategories() {
         List<Kategori> categories = categoryController.getAllCategories();
         categoryPanel.removeAll();
@@ -186,6 +206,25 @@ public class HalamanUtamaPanel extends JPanel {
         }
     }
 
+    private void loadDefaultCategoryItems() {
+        Kategori besarCategory = null;
+        List<Kategori> categories = categoryController.getAllCategories();
+
+        for (Kategori category : categories) {
+            if (category.getName().equals("Besar")) {
+                besarCategory = category;
+                break;
+            }
+        }
+        if(besarCategory != null) {
+            loadItemTypes(besarCategory.getId());
+        } else {
+            JOptionPane.showMessageDialog(this,"Kategori Besar tidak ditemukan","Error", JOptionPane.ERROR_MESSAGE);
+        }
+        loadCategories();
+
+    }
+
     //  loadItemTypes
     private void loadItemTypes(int categoryId) {
         List<JenisSampah> itemTypes = itemTypeController.getByCategoryId(categoryId);
@@ -202,21 +241,50 @@ public class HalamanUtamaPanel extends JPanel {
         imageLabel.setText("");
     }
 
-    // custom cell renderer
-   /* private static class ImageRenderer extends DefaultTableCellRenderer {
+
+    private void showDescriptionDialog(String description) {
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        JDialog dialog = new JDialog(parentFrame, "Description", true);
+        JTextArea textArea = new JTextArea(description);
+        textArea.setEditable(false);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(400, 300));
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(scrollPane, BorderLayout.CENTER);
+        dialog.add(panel);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private static class TextAreaRenderer extends JTextArea implements TableCellRenderer {
+
+        public TextAreaRenderer() {
+            setLineWrap(true);
+            setWrapStyleWord(true);
+            setOpaque(true);
+        }
+
         @Override
-       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel label = new JLabel();
-           if (value instanceof ImageIcon) {
-              label.setIcon((ImageIcon) value);
-           }
-          else if(value instanceof String){
-                label.setText((String) value);
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setForeground(table.getSelectionForeground());
+                setBackground(table.getSelectionBackground());
             } else {
-                label.setText("");
-          }
-           label.setHorizontalAlignment(SwingConstants.CENTER);
-           return label;
-       }
-    }*/
+                setForeground(table.getForeground());
+                setBackground(table.getBackground());
+            }
+            setFont(table.getFont());
+            if (value != null) {
+                setText(value.toString());
+            } else {
+                setText("");
+            }
+            return this;
+        }
+    }
 }
