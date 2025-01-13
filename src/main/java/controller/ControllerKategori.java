@@ -22,13 +22,6 @@ public class ControllerKategori {
         }
     }
 
-    public Kategori getCategoryById(int id) {
-        try (SqlSession session = factory.openSession()) {
-            MapperKategori mapper = session.getMapper(MapperKategori.class);
-            return mapper.getCategoryById(id); // Call the mapper method
-        }
-    }
-
     public void addCategory(Kategori category) {
         try (SqlSession session = factory.openSession()) {
             MapperKategori mapper = session.getMapper(MapperKategori.class);

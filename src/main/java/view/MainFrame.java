@@ -77,8 +77,8 @@ public class MainFrame extends JFrame {
     }
 
     private void setupFrame() {
-        setTitle("E-WastePas");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("E-Waste");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(420, 800);
         setLocationRelativeTo(null);
         setResizable(false);

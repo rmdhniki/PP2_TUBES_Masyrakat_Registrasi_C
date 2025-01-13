@@ -24,7 +24,6 @@ public class FormChangePassword extends JDialog {
     private JPasswordField oldPasswordField;
     private JPasswordField newPasswordField;
     private JPasswordField confirmPasswordField;
-    private JLabel errorLabel;
     private JButton okButton;
     private JButton cancelButton;
     private final String email;
@@ -48,8 +47,6 @@ public class FormChangePassword extends JDialog {
         oldPasswordField = new JPasswordField(20);
         newPasswordField = new JPasswordField(20);
         confirmPasswordField = new JPasswordField(20);
-        errorLabel = new JLabel("", SwingConstants.CENTER);
-        errorLabel.setForeground(Color.RED);
         okButton = createButton("OK", new Color(0x187824), Color.WHITE);
         cancelButton = createButton("Cancel", new Color(0x80251A), Color.WHITE);
         Dimension fieldSize = new Dimension(300, 40);
@@ -61,20 +58,20 @@ public class FormChangePassword extends JDialog {
     }
     private  JButton createButton(String text, Color bgColor, Color fgColor) {
         JButton button = new JButton(text);
-      button.setPreferredSize(new Dimension(170, 40));
-      button.setMaximumSize(new Dimension(170, 40));
+        button.setPreferredSize(new Dimension(170, 40));
+        button.setMaximumSize(new Dimension(170, 40));
         button.setFont(new Font("Sans-Serif", Font.BOLD, 14));
         button.setBackground(bgColor);
         button.setForeground(fgColor);
-      button.setFocusPainted(false);
+        button.setFocusPainted(false);
         return button;
     }
-   private void setupLayout() {
+    private void setupLayout() {
         setLayout(new GridBagLayout());
-       JPanel mainPanel = new JPanel(new GridBagLayout());
+        JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(new Color(0x66986C));
         GridBagConstraints gbc = new GridBagConstraints();
-       gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 10, 5, 10);
         GridBagConstraints formGbc = new GridBagConstraints();
@@ -82,7 +79,7 @@ public class FormChangePassword extends JDialog {
         formGbc.fill = GridBagConstraints.HORIZONTAL;
         formGbc.insets = new Insets(5, 10, 5, 10);
 
-       JLabel oldPasswordLabel = new JLabel("Old Password:", SwingConstants.LEFT);
+        JLabel oldPasswordLabel = new JLabel("Old Password:", SwingConstants.LEFT);
         oldPasswordLabel.setForeground(Color.WHITE);
         oldPasswordLabel.setFont(oldPasswordLabel.getFont().deriveFont(Font.BOLD,16));
         mainPanel.add(oldPasswordLabel, formGbc);
@@ -92,42 +89,45 @@ public class FormChangePassword extends JDialog {
         newPasswordLabel.setForeground(Color.WHITE);
         newPasswordLabel.setFont(newPasswordLabel.getFont().deriveFont(Font.BOLD,16));
         mainPanel.add(newPasswordLabel, formGbc);
-       mainPanel.add(newPasswordField, formGbc);
+        mainPanel.add(newPasswordField, formGbc);
 
         JLabel confirmPasswordLabel = new JLabel("Confirm New Password:", SwingConstants.LEFT);
-       confirmPasswordLabel.setForeground(Color.WHITE);
-       confirmPasswordLabel.setFont(confirmPasswordLabel.getFont().deriveFont(Font.BOLD,16));
-       mainPanel.add(confirmPasswordLabel, formGbc);
-       mainPanel.add(confirmPasswordField, formGbc);
-       mainPanel.add(errorLabel, formGbc);
+        confirmPasswordLabel.setForeground(Color.WHITE);
+        confirmPasswordLabel.setFont(confirmPasswordLabel.getFont().deriveFont(Font.BOLD,16));
+        mainPanel.add(confirmPasswordLabel, formGbc);
+        mainPanel.add(confirmPasswordField, formGbc);
         mainPanel.add(Box.createVerticalStrut(10), formGbc);
 
-       JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,10,10));
-       buttonPanel.setBackground(new Color(0x66986C));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,10,10));
+        buttonPanel.setBackground(new Color(0x66986C));
         buttonPanel.add(okButton);
-       buttonPanel.add(cancelButton);
+        buttonPanel.add(cancelButton);
         mainPanel.add(buttonPanel,formGbc);
 
-       add(mainPanel,gbc);
-       setBackground(new Color(0x66986C));
-       setSize(400,350); //set fixed size of frame
+        add(mainPanel,gbc);
+        setBackground(new Color(0x66986C));
+        setSize(400,350);
         pack();
         setLocationRelativeTo(getParent());
     }
-   private void setupListeners() {
+    private void setupListeners() {
         okButton.addActionListener(e -> {
             String oldPassword = new String(oldPasswordField.getPassword());
             String newPassword = new String(newPasswordField.getPassword());
             String confirmPassword = new String(confirmPasswordField.getPassword());
-            errorLabel.setText("");
-
 
             if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-                errorLabel.setText("Please fill all the fields!");
+                JOptionPane.showMessageDialog(this,
+                        "Please fill all the fields!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (!newPassword.equals(confirmPassword)) {
-                errorLabel.setText("Passwords do not match!");
+                JOptionPane.showMessageDialog(this,
+                        "Passwords do not match!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             try {
@@ -138,15 +138,20 @@ public class FormChangePassword extends JDialog {
                             "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                     dispose();
-                }else{
-                    errorLabel.setText("Wrong Old Password");
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Data input salah!, Input ulang data anda",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-            }catch(Exception ex){
-                errorLabel.setText("Failed to change password!");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Data input salah!, Input ulang data anda",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
         });
         cancelButton.addActionListener(e -> dispose());
-
     }
 }

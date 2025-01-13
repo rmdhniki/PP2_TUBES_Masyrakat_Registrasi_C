@@ -73,7 +73,7 @@ public class HalamanLogin extends JPanel {
 
         JPanel headerPanel = new JPanel();
         headerPanel.setBackground(new Color(0x66986C));
-        JLabel titleLabel = new JLabel("Login to E-WastePas");
+        JLabel titleLabel = new JLabel("Login to E-Waste");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setForeground(Color.WHITE);
         headerPanel.add(titleLabel);
